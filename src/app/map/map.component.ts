@@ -14,7 +14,7 @@ export class MapComponent implements OnInit {
   lng = -122.41;
   constructor() { }
   ngOnInit() {
-    mapboxgl.accessToken = environment.mapbox.accessToken;
+    /*mapboxgl.accessToken = environment.mapbox.accessToken;
       this.map = new mapboxgl.Map({
         container: 'map',
         style: this.style,
@@ -22,6 +22,6 @@ export class MapComponent implements OnInit {
         center: [this.lng, this.lat]
     });
     // Add map controls
-    this.map.addControl(new mapboxgl.NavigationControl());
+    this.map.addControl(new mapboxgl.NavigationControl());*/
   }
 }

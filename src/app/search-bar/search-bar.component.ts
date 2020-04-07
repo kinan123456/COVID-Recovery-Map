@@ -1,5 +1,4 @@
 import { Component, OnInit } from '@angular/core';
-import { DataService } from '../shared/data-service.service';
 
 @Component({
   selector: 'app-search-bar',
@@ -7,10 +6,9 @@ import { DataService } from '../shared/data-service.service';
   styleUrls: ['./search-bar.component.css']
 })
 export class SearchBarComponent implements OnInit {
-  info: Promise<string>;
-  constructor(private dataSvc: DataService) { }
+  constructor() { }
 
   ngOnInit(): void {
-    this.dataSvc.extractCovid19Data();
+
   }
 }
