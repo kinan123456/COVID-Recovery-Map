@@ -1,21 +1,23 @@
-import { InformationPanelComponent } from '../information-panel/information-panel.component';
+import { HttpClient, HttpResponse } from '@angular/common/http';
+import { Injectable } from '@angular/core';
+import { Observable } from 'rxjs';
+import { CountryInfo } from '../information-panel/country-info.model';
 
+const url = 'https://pomber.github.io/covid19/timeseries.json';
+
+@Injectable({
+    providedIn: 'root'
+})
 export class DataService {
-    info: any;
-    url: string;
+    constructor(private httpClient: HttpClient) {}
 
-    constructor() {
-        this.url = "https://pomber.github.io/covid19/timeseries.json";
+    fetchData() {
+        return this.httpClient.get(url);
     }
-    // Standard variation
-    extractCovid19Data():  Promise<string> {
-        
-        return fetch(this.url)
-        .then(response => {
-            if (!response.ok) {
-                throw new Error(response.statusText)
-            }
-            return response.json() as Promise<string>
-        })
-    }
+
+
+      /*getSmartphoneById(id: any): Observable<any> {
+        return this.http.get<Smartphone>(localUrl + id).pipe(
+          retry(3), catchError(this.handleError<Smartphone>('getSmartphone')));
+      }*/
 }
