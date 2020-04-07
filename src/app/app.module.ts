@@ -7,12 +7,14 @@ import { InformationPanelComponent } from './information-panel/information-panel
 import { DataService } from './shared/data-service.service';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { MapComponent } from './map/map.component';
+import { SearchBarComponent } from './search-bar/search-bar.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     InformationPanelComponent,
     MapComponent,
+    SearchBarComponent
   ],
   imports: [
     BrowserModule,
