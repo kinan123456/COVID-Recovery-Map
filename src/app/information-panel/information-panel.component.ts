@@ -13,14 +13,7 @@ export class InformationPanelComponent implements OnInit {
 
   ngOnInit(): void {
     this.totalRecovered = 0;
-    this.dataSvc.extractCovid19Data()
-      .then(data => {
-        let recoveredData = 0;
-        data["Israel"].forEach((date, confirmed, recovered, deaths) => {
-          recoveredData += recovered;
-        }) 
-    });
-
+    this.dataSvc.extractCovid19Data();
     this.outputRecovered();
   }
 
