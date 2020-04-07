@@ -1,5 +1,4 @@
 import { Component, OnInit } from '@angular/core';
-import { DataService } from '../shared/data-service.service';
 
 @Component({
   selector: 'app-information-panel',
@@ -7,17 +6,12 @@ import { DataService } from '../shared/data-service.service';
   styleUrls: ['./information-panel.component.css']
 })
 export class InformationPanelComponent implements OnInit {
-  info: Promise<string>;
-  totalRecovered: number;
-  constructor(private dataSvc: DataService) { }
+  
+
+  constructor() { }
 
   ngOnInit(): void {
-    this.totalRecovered = 0;
-    this.dataSvc.extractCovid19Data();
-    this.outputRecovered();
+
   }
 
-  outputRecovered() {
-    console.log("total is: " + this.totalRecovered)
-  }
 }
