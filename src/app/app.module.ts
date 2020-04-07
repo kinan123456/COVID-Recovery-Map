@@ -6,18 +6,18 @@ import { AppComponent } from './app.component';
 import { InformationPanelComponent } from './information-panel/information-panel.component';
 import { DataService } from './shared/data-service.service';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import {MatGridListModule} from '@angular/material/grid-list';
+import { MapComponent } from './map/map.component';
 
 @NgModule({
   declarations: [
     AppComponent,
-    InformationPanelComponent
+    InformationPanelComponent,
+    MapComponent,
   ],
   imports: [
     BrowserModule,
     AppRoutingModule,
-    BrowserAnimationsModule,
-    MatGridListModule
+    BrowserAnimationsModule
   ],
   providers: [DataService],
   bootstrap: [AppComponent]
