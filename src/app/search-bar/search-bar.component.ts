@@ -1,10 +1,9 @@
-import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { Component, OnInit, Input } from '@angular/core';
+import { FormBuilder, FormGroup } from '@angular/forms';
 import { Observable } from 'rxjs';
-import { debounceTime, switchMap, startWith, map, tap, finalize } from 'rxjs/operators';
+import { debounceTime, switchMap, map } from 'rxjs/operators';
 import { CountryService } from '../country/country.service';
 import { Country } from '../country/country.model';
-import { MatInput } from '@angular/material/input';
 
 @Component({
   selector: 'app-search-bar',
@@ -15,7 +14,7 @@ export class SearchBarComponent implements OnInit {
   filteredCountries: Observable<Country[]>;
   countries: Country[] = [];
   usersForm: FormGroup;
-  test: any;
+  @Input() recoveredCases: number;
 
   constructor(private fb: FormBuilder, private countrySvc: CountryService) {}
   
@@ -23,14 +22,24 @@ export class SearchBarComponent implements OnInit {
     this.usersForm = this.fb.group({
       userInput: null
     });
+
+    this.countrySvc.getCountries().subscribe(resp => {
+      this.countries = resp
+      this.countries.sort((obj1, obj2) => obj1.country.localeCompare(obj2.country));
+    });
+
     this.filteredCountries = this.usersForm.get('userInput').valueChanges
-    .pipe(
-      debounceTime(300),
-      switchMap(value => this.countrySvc.getCountries())
-    );    
+    .pipe(map(val => this._filter(val)),
+      debounceTime(300)
+    );
   }
 
-  displayFn(country?: Country): string | undefined {
-    return country ? country.country : undefined;
-  } 
+  _filter(val: string) {
+    return this.countries.filter(country =>
+      country.country.toLowerCase().includes(val.toLowerCase()));
+  }
+
+  parseCountry(country: Country) {
+    console.log(country.recovered);
+  }
 }

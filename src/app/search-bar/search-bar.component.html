@@ -4,8 +4,10 @@
   </mat-form-field>
   <span>Your choice is: {{usersForm.get('userInput').value | json}}</span>
 
-  <mat-autocomplete #auto="matAutocomplete" [displayWith]="displayFn">
-      <mat-option *ngFor="let country of (filteredCountries | async)" [value]="country">
+  <mat-autocomplete #auto="matAutocomplete">
+      <mat-option *ngFor="let country of (filteredCountries | async)" 
+                  [value]="country.country"
+                  (onSelectionChange)="parseCountry(country)">
         <span>{{ country.country }}</span>
         <small> | ID: {{country.countryInfo._id}}</small>
       </mat-option>
