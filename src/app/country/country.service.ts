@@ -13,20 +13,12 @@ export class CountryService {
 
   constructor(private httpClient: HttpClient) {  }
 
- getCountries(): Observable<Country[]> {
+  getCountries(): Observable<Country[]> {
     return this.httpClient.get<Country[]>(url)
-              .pipe(tap((response: Country[]) => {
-                  return response;
-              }));
+        .pipe(catchError(this.handleError));
   }
-
-  getCountry(name: string): Observable<Country> {
-    return this.getCountries().pipe(
-      map(countries => countries.find(country => country.country === name))
-    );
-  }  
   
-  private handleError(res: HttpErrorResponse | any) {
+  handleError(res: HttpErrorResponse | any) {
     console.error(res.error || res.body.error);
     return observableThrowError(res.error || 'Server Error');
   }  
