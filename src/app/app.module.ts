@@ -13,6 +13,8 @@ import { AppComponent } from './app.component';
 import { InformationPanelComponent } from './information-panel/information-panel.component';
 import { MapComponent } from './map/map.component';
 import { SearchBarComponent } from './search-bar/search-bar.component';
+import { AngularCesiumModule } from 'angular-cesium';
+import { AngularCesiumWidgetsModule } from 'angular-cesium';
 
 
 @NgModule({
@@ -31,7 +33,9 @@ import { SearchBarComponent } from './search-bar/search-bar.component';
     MatInputModule,
     FormsModule,
     ReactiveFormsModule,
-    MatProgressSpinnerModule
+    MatProgressSpinnerModule,
+    AngularCesiumModule.forRoot(),
+    AngularCesiumWidgetsModule
   ],
   providers: [],
   bootstrap: [AppComponent]

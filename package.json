@@ -23,6 +23,8 @@
     "@angular/platform-browser-dynamic": "~9.1.0",
     "@angular/router": "~9.1.0",
     "@types/mapbox-gl": "^1.8.3",
+    "angular-cesium": "0.0.65",
+    "cesium": "^1.68.0",
     "mapbox-gl": "^1.9.1",
     "material-design-icons": "^3.0.1",
     "ng2-completer": "^3.0.3",
