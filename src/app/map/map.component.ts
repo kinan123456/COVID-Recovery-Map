@@ -1,3 +1,7 @@
+import { Component, OnInit } from '@angular/core';
+
+let viewer: any;
+let ellipsoid: any;
 
 @Component({
   selector: 'app-map',
@@ -5,12 +9,31 @@
   styleUrls: ['./map.component.css']
 })
 export class MapComponent implements OnInit {
+
+
   constructor() { }
+
   ngOnInit() {
+    this.setup();
+  }
+
+  zoomIn() {
+    viewer.camera.moveForward(
+      ellipsoid.cartesianToCartographic(viewer.camera.position).height / 10.0
+    );
+  }
+
+  zoomOut() {
+    viewer.camera.moveBackward(
+      ellipsoid.cartesianToCartographic(viewer.camera.position).height / 10.0
+    );
+  }
+
   setup() {
     //////////////////////////////////////////////////////////////////////////
     // Creating the Viewer & Imagery
     //////////////////////////////////////////////////////////////////////////
+    viewer = new Cesium.Viewer("cesiumContainer", {
       imageryProvider: Cesium.createWorldImagery({
         style: Cesium.IonWorldImageryStyle.AERIAL_WITH_LABELS,
         assetId: 3954

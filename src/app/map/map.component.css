@@ -1,5 +1,17 @@
+#toolbar {
+    padding: 2px 5px;
+    position: absolute;
+    top: 5px;
+    left: 5px;
+    background: rgba(42,42,42,0.9); 
+    border-radius: 5px;
+}
+
 #cesiumContainer {
     width: 100%; height: 100%; margin: 0; padding: 0; overflow: hidden;
     font-family: sans-serif; color: #edffff;
 }
+
+#hud {
+    color: white;
 }
