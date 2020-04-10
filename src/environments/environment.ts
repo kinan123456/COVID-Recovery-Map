@@ -4,10 +4,6 @@
 
 export const environment = {
   production: false,
-
-  mapbox: {
-    accessToken: 'pk.eyJ1Ijoia2luYW5zb2JpaCIsImEiOiJjazhvdmZ1cGQweHk4M2VxemFvNjA4Ymw1In0.1hCGrxjUa28TQQeFci9Dmg'
-  }
 };
 
 /*
