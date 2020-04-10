@@ -49,6 +49,30 @@ export class MapComponent implements OnInit {
       scene3DOnly: true, //Each geometry instance will only be rendered in 3D to save GPU memory.
       projectionPicker: true,  //Add projection button
     });
+
+    //////////////////////////////////////////////////////////////////////////
+    // Adding buttons with lon, lat, alt information
+    //////////////////////////////////////////////////////////////////////////
+    var cartographic = new Cesium.Cartographic();
+    var camera = viewer.scene.camera;
+    ellipsoid = viewer.scene.mapProjection.ellipsoid;
+
+    var hud = document.getElementById("hud");
+
+    viewer.clock.onTick.addEventListener(function(clock) {
+      ellipsoid.cartesianToCartographic(camera.positionWC, cartographic);
+      hud.innerHTML =
+        "Lon: " +
+        Cesium.Math.toDegrees(cartographic.longitude).toFixed(2) +
+        "&#176<br/>" +
+        "Lat: " +
+        Cesium.Math.toDegrees(cartographic.latitude).toFixed(2) +
+        "&#176<br/>" +
+        "Alt: " +
+        (cartographic.height * 0.001).toFixed(1) +
+        " km";
+    });
+
     });
     // Add map controls
     this.map.addControl(new mapboxgl.NavigationControl());*/
