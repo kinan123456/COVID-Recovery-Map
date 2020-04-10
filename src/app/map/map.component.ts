@@ -31,6 +31,16 @@ export class MapComponent implements OnInit {
 
   setup() {
     //////////////////////////////////////////////////////////////////////////
+    // Create a clock that loops on Christmas day 2013 and runs in 4000x real time.
+    //////////////////////////////////////////////////////////////////////////
+    var clock = new Cesium.Clock({
+      clockRange: Cesium.ClockRange.LOOP_STOP, // loop when we hit the end time
+      clockStep: Cesium.ClockStep.SYSTEM_CLOCK_MULTIPLIER,
+      multiplier: 1, // how much time to advance each tick
+      shouldAnimate: true // Animation on by default
+    });
+
+    //////////////////////////////////////////////////////////////////////////
     // Creating the Viewer & Imagery
     //////////////////////////////////////////////////////////////////////////
     viewer = new Cesium.Viewer("cesiumContainer", {
