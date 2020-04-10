@@ -83,8 +83,73 @@ export class MapComponent implements OnInit {
         " km";
     });
 
+    //////////////////////////////////////////////////////////////////////////
+    // Add Pins to map
+    //////////////////////////////////////////////////////////////////////////
+    var pinBuilder = new Cesium.PinBuilder();
+
+    //Create a red pin representing a hospital from the maki icon set.
+    var hospitalPin = Cesium.when(
+      pinBuilder.fromMakiIconId("hospital", Cesium.Color.RED, 48),
+      function(canvas) {
+        return viewer.entities.add({
+          name: "Hospital",
+          position: Cesium.Cartesian3.fromDegrees(-75.1698606, 39.9211275),
+          billboard: {
+            image: canvas.toDataURL(),
+            verticalOrigin: Cesium.VerticalOrigin.BOTTOM
+          }
+        });
+      }
+    );
+
+    var url = Cesium.buildModuleUrl("Assets/Textures/maki/grocery.png");
+    var groceryPin = Cesium.when(
+      pinBuilder.fromUrl(url, Cesium.Color.GREEN, 48),
+      function(canvas) {
+        return viewer.entities.add({
+          name: "Grocery store",
+          position: Cesium.Cartesian3.fromDegrees(-75.1705217, 39.921786),
+          billboard: {
+            image: canvas.toDataURL(),
+            verticalOrigin: Cesium.VerticalOrigin.BOTTOM
+          }
+        });
+      }
+    );
+
+    //Since some of the pins are created asynchronously, wait for them all to load before zooming/
+    Cesium.when.all([hospitalPin, groceryPin], function(pins) {
+      viewer.zoomTo(pins);
     });
-    // Add map controls
-    this.map.addControl(new mapboxgl.NavigationControl());*/
+
+    //////////////////////////////////////////////////////////////////////////
+    // Custom mouse interaction for highlighting and selecting
+    //////////////////////////////////////////////////////////////////////////
+
+    // If the mouse is over a point of interest, change the entity billboard scale and color
+    var previousPickedEntity;
+    var handler = viewer.screenSpaceEventHandler;
+    handler.setInputAction(function(movement) {
+      var pickedPrimitive = viewer.scene.pick(movement.endPosition);
+      var pickedEntity = Cesium.defined(pickedPrimitive)
+        ? pickedPrimitive.id
+        : undefined;
+      // Unhighlight the previously picked entity
+      if (Cesium.defined(previousPickedEntity)) {
+        previousPickedEntity.billboard.scale = 1.0;
+        previousPickedEntity.billboard.color = Cesium.Color.WHITE;
+      }
+      // Highlight the currently picked entity
+      if (
+        Cesium.defined(pickedEntity) &&
+        Cesium.defined(pickedEntity.billboard)
+      ) {
+        pickedEntity.billboard.scale = 2.0;
+        pickedEntity.billboard.color = Cesium.Color.ORANGERED;
+        previousPickedEntity = pickedEntity;
+      }
+    }, Cesium.ScreenSpaceEventType.MOUSE_MOVE);
+
   }
 }
