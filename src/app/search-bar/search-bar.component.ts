@@ -1,7 +1,7 @@
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, OnInit} from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { Observable } from 'rxjs';
-import { debounceTime, switchMap, map } from 'rxjs/operators';
+import { map } from 'rxjs/operators';
 import { CountryService } from '../country/country.service';
 import { Country } from '../country/country.model';
 
@@ -14,7 +14,6 @@ export class SearchBarComponent implements OnInit {
   filteredCountries: Observable<Country[]>;
   countries: Country[] = [];
   usersForm: FormGroup;
-  @Input() recoveredCases: number;
 
   constructor(private fb: FormBuilder, private countrySvc: CountryService) {}
   
@@ -29,8 +28,7 @@ export class SearchBarComponent implements OnInit {
     });
 
     this.filteredCountries = this.usersForm.get('userInput').valueChanges
-    .pipe(map(val => this._filter(val)),
-      debounceTime(300)
+      .pipe(map(val => this._filter(val))
     );
   }
 

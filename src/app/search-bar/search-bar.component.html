@@ -2,7 +2,6 @@
   <mat-form-field class="example-full-width">
     <input matInput placeholder="Choose a country" [matAutocomplete]="auto" formControlName='userInput'>
   </mat-form-field>
-  <span>Your choice is: {{usersForm.get('userInput').value | json}}</span>
 
   <mat-autocomplete #auto="matAutocomplete">
       <mat-option *ngFor="let country of (filteredCountries | async)" 
