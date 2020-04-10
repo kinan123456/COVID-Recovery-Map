@@ -1,7 +1,7 @@
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
-import { Injectable } from '@angular/core';
-import { Observable, throwError as observableThrowError } from 'rxjs';
-import { catchError, map, filter, tap } from 'rxjs/operators';
+import { Injectable, OnDestroy } from '@angular/core';
+import { Observable, throwError as observableThrowError, Subject } from 'rxjs';
+import { catchError } from 'rxjs/operators';
 import { Country } from './country.model';
 
 const url = 'https://corona.lmao.ninja/countries';
@@ -9,9 +9,13 @@ const url = 'https://corona.lmao.ninja/countries';
 @Injectable({
     providedIn: 'root'
 })
-export class CountryService {
+export class CountryService{
 
-  constructor(private httpClient: HttpClient) {  }
+  selectedCountry: Subject<Country>;
+
+  constructor(private httpClient: HttpClient) {  
+    this.selectedCountry = new Subject<Country>();
+  }
 
   getCountries(): Observable<Country[]> {
     return this.httpClient.get<Country[]>(url)
@@ -21,5 +25,9 @@ export class CountryService {
   handleError(res: HttpErrorResponse | any) {
     console.error(res.error || res.body.error);
     return observableThrowError(res.error || 'Server Error');
-  }  
+  }
+
+  updateCountry(country: Country) {
+    this.selectedCountry.next(country);
+  }
 }

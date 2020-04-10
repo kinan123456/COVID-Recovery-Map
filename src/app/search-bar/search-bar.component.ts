@@ -38,6 +38,6 @@ export class SearchBarComponent implements OnInit {
   }
 
   parseCountry(country: Country) {
-    console.log(country.recovered);
+    this.countrySvc.updateCountry(country);
   }
 }
