@@ -144,9 +144,6 @@ export class MapComponent implements OnInit {
     //////////////////////////////////////////////////////////////////////////
     // Custom mouse interaction for highlighting and selecting
     //////////////////////////////////////////////////////////////////////////
-
-    // If the mouse is over a point of interest, change the entity billboard scale and color
-    var previousPickedEntity;
     var handler = viewer.screenSpaceEventHandler;
     handler.setInputAction(function(movement) {
       var pickedPrimitive = viewer.scene.pick(movement.endPosition);
@@ -157,12 +154,26 @@ export class MapComponent implements OnInit {
       if (Cesium.defined(previousPickedEntity)) {
         previousPickedEntity.billboard.scale = 1.0;
         previousPickedEntity.billboard.color = Cesium.Color.WHITE;
+        labelEntity.label.show = false;
       }
       // Highlight the currently picked entity
       if (
         Cesium.defined(pickedEntity) &&
         Cesium.defined(pickedEntity.billboard)
       ) {
+        var cartesian = viewer.scene.pickPosition(movement.endPosition);
+        var cartographic = Cesium.Cartographic.fromCartesian(cartesian);
+        var longitudeString = Cesium.Math.toDegrees(cartographic.longitude).toFixed(2);
+        var latitudeString = Cesium.Math.toDegrees(cartographic.latitude).toFixed(2);
+        var heightString = cartographic.height.toFixed(2);
+
+        
+        labelEntity.position = cartesian;
+        labelEntity.label.show = true;
+        labelEntity.label.text = pickedEntity.name;
+
+        labelEntity.label.eyeOffset = new Cesium.Cartesian3(0.0, 0.0, -cartographic.height * (viewer.scene.mode === Cesium.SceneMode.SCENE2D ? 1.5 : 1.0));
+
         pickedEntity.billboard.scale = 2.0;
         pickedEntity.billboard.color = Cesium.Color.ORANGERED;
         previousPickedEntity = pickedEntity;
