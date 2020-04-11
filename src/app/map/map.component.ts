@@ -1,7 +1,11 @@
 import { Component, OnInit } from '@angular/core';
+import { CountryService } from '../country/country.service';
+import { Country } from '../country/country.model';
 
 let viewer: any;
 let ellipsoid: any;
+let pinBuilder = new Cesium.PinBuilder();
+let pinMarkers: any[] = [];
 
 @Component({
   selector: 'app-map',
@@ -9,12 +13,52 @@ let ellipsoid: any;
   styleUrls: ['./map.component.css']
 })
 export class MapComponent implements OnInit {
-
-
-  constructor() { }
+  countries: Country[] = [];  
+  constructor(private countrySvc: CountryService) { }
 
   ngOnInit() {
     this.setup();
+
+    this.countrySvc.getCountries().subscribe(resp => {
+      var i;
+      this.countries = resp
+      for (i = 0; i < this.countries.length; i++) {
+        this.addPins(this.countries[i]);
+      }
+    });
+
+    //Since some of the pins are created asynchronously, wait for them all to load before zooming/
+    Cesium.when(pinMarkers, function(pins){
+      viewer.zoomTo(pins);
+    });
+  }
+  
+  /**
+  * Add pins as markers to all countries at map.
+  * @param country Country object
+  */
+  addPins(country) {
+    //Create a red pin representing a hospital from the maki icon set.
+    var pinMarker = Cesium.when(pinBuilder.fromMakiIconId('marker', Cesium.Color.GREEN, 48), function(canvas) {
+      return viewer.entities.add({
+        name : country.country,
+        position : Cesium.Cartesian3.fromDegrees(country.countryInfo.long, country.countryInfo.lat),
+        billboard : {
+          image : canvas.toDataURL(),
+          verticalOrigin : Cesium.VerticalOrigin.BOTTOM
+        },
+        description: 
+                    '\
+            <p>\
+              Country Name: ' + country.country + '<br/>\
+              Total Cases:' + country.cases + '<br/>\
+              Total Deaths:' + country.deaths + '<br/>\
+              Total Recovered:' + country.recovered + '<br/>\
+              Total Active:' + country.active + '<br/>\
+            </p>'
+      });
+    });
+    pinMarkers.push(pinMarker);
   }
 
   zoomIn() {
@@ -83,45 +127,19 @@ export class MapComponent implements OnInit {
         " km";
     });
 
-    //////////////////////////////////////////////////////////////////////////
-    // Add Pins to map
-    //////////////////////////////////////////////////////////////////////////
-    var pinBuilder = new Cesium.PinBuilder();
+    // If the mouse is over a point of interest, change the entity billboard scale and color
+    var previousPickedEntity;
 
-    //Create a red pin representing a hospital from the maki icon set.
-    var hospitalPin = Cesium.when(
-      pinBuilder.fromMakiIconId("hospital", Cesium.Color.RED, 48),
-      function(canvas) {
-        return viewer.entities.add({
-          name: "Hospital",
-          position: Cesium.Cartesian3.fromDegrees(-75.1698606, 39.9211275),
-          billboard: {
-            image: canvas.toDataURL(),
-            verticalOrigin: Cesium.VerticalOrigin.BOTTOM
-          }
-        });
+    var labelEntity = viewer.entities.add({
+      label : {
+          show : false,
+          showBackground : true,
+          font : '14px monospace',
+          horizontalOrigin : Cesium.HorizontalOrigin.LEFT,
+          verticalOrigin : Cesium.VerticalOrigin.TOP,
+          pixelOffset : new Cesium.Cartesian2(15, 0)
       }
-    );
-
-    var url = Cesium.buildModuleUrl("Assets/Textures/maki/grocery.png");
-    var groceryPin = Cesium.when(
-      pinBuilder.fromUrl(url, Cesium.Color.GREEN, 48),
-      function(canvas) {
-        return viewer.entities.add({
-          name: "Grocery store",
-          position: Cesium.Cartesian3.fromDegrees(-75.1705217, 39.921786),
-          billboard: {
-            image: canvas.toDataURL(),
-            verticalOrigin: Cesium.VerticalOrigin.BOTTOM
-          }
-        });
-      }
-    );
-
-    //Since some of the pins are created asynchronously, wait for them all to load before zooming/
-    Cesium.when.all([hospitalPin, groceryPin], function(pins) {
-      viewer.zoomTo(pins);
-    });
+   });
 
     //////////////////////////////////////////////////////////////////////////
     // Custom mouse interaction for highlighting and selecting
