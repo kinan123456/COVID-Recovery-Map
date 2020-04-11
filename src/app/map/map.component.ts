@@ -61,12 +61,18 @@ export class MapComponent implements OnInit {
     pinMarkers.push(pinMarker);
   }
 
+  /**
+   * Zoom in button click handler: Move camera forward.
+   */
   zoomIn() {
     viewer.camera.moveForward(
       ellipsoid.cartesianToCartographic(viewer.camera.position).height / 10.0
     );
   }
 
+  /***
+   * Zoom out button click handler: Move camera backward.
+   */
   zoomOut() {
     viewer.camera.moveBackward(
       ellipsoid.cartesianToCartographic(viewer.camera.position).height / 10.0
@@ -83,11 +89,54 @@ export class MapComponent implements OnInit {
       multiplier: 1, // how much time to advance each tick
       shouldAnimate: true // Animation on by default
     });
+    /**
+     * This class is an example of a custom geocoder.
+     * It provides geocoding through the OpenStreetMap Nominatim service.
+     * @alias OpenStreetMapNominatimGeocoder
+     * @constructor
+     */
+    function OpenStreetMapNominatimGeocoder() {
+    }
+
+    /**
+     * The function called to geocode using this geocoder service.
+     *
+     * @param {String} input The query to be sent to the geocoder service
+     * @returns {Promise<GeocoderService~Result[]>}
+     */
+    OpenStreetMapNominatimGeocoder.prototype.geocode = function (input) {
+        var endpoint = 'https://nominatim.openstreetmap.org/search';
+        var resource = new Cesium.Resource({
+            url: endpoint,
+            queryParameters: {
+                format: 'json',
+                q: input
+            }
+        });
+
+        return resource.fetchJson()
+            .then(function (results) {
+                var bboxDegrees;
+                return results.map(function (resultObject) {
+                    bboxDegrees = resultObject.boundingbox;
+                    return {
+                        displayName: resultObject.display_name,
+                        destination: Cesium.Rectangle.fromDegrees(
+                            bboxDegrees[2],
+                            bboxDegrees[0],
+                            bboxDegrees[3],
+                            bboxDegrees[1]
+                        )
+                    };
+                });
+            });
+    };
 
     //////////////////////////////////////////////////////////////////////////
     // Creating the Viewer & Imagery
     //////////////////////////////////////////////////////////////////////////
     viewer = new Cesium.Viewer("cesiumContainer", {
+      geocoder: new OpenStreetMapNominatimGeocoder(),
       imageryProvider: Cesium.createWorldImagery({
         style: Cesium.IonWorldImageryStyle.AERIAL_WITH_LABELS,
         assetId: 3954
@@ -96,10 +145,8 @@ export class MapComponent implements OnInit {
       timeline: false,  //Timeline disabled
       animation: false, //Hide Clock
       homeButton: false,  //Hide HomeButton top right corner
-      infoBox: false, //InfoBox widget won't be created
       fullscreenButton: false,
       sceneModePicker: false,
-      vrButton: true,
       scene3DOnly: true, //Each geometry instance will only be rendered in 3D to save GPU memory.
       projectionPicker: true,  //Add projection button
     });
