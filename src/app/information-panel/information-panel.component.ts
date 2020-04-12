@@ -7,7 +7,7 @@ import { Country } from '../country/country.model';
   templateUrl: './information-panel.component.html',
   styleUrls: ['./information-panel.component.css']
 })
-export class InformationPanelComponent implements OnInit, OnDestroy {
+export class InformationPanelComponent implements OnInit{
   chosenCountry: Country;
   
   constructor(private countrySvc: CountryService) { }
@@ -18,11 +18,5 @@ export class InformationPanelComponent implements OnInit, OnDestroy {
         this.chosenCountry = selectedCountry
       });
   }
-
-  // Cleanup just before Angular destroys the directive/component.
-  // Unsubscribe observables and detach event handlers to avoid memory leaks.
-  ngOnDestroy(): void {
-    this.countrySvc.selectedCountry.unsubscribe();
-  }  
 
 }

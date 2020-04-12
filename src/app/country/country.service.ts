@@ -1,6 +1,6 @@
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Injectable, OnDestroy } from '@angular/core';
-import { Observable, throwError as observableThrowError, Subject } from 'rxjs';
+import { Observable, throwError as observableThrowError, Subject, BehaviorSubject } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 import { Country } from './country.model';
 
@@ -11,11 +11,10 @@ const url = 'https://corona.lmao.ninja/countries';
 })
 export class CountryService{
 
-  selectedCountry: Subject<Country>;
+  private countrySource = new BehaviorSubject<Country>(new Country());
+  selectedCountry = this.countrySource.asObservable();
 
-  constructor(private httpClient: HttpClient) {  
-    this.selectedCountry = new Subject<Country>();
-  }
+  constructor(private httpClient: HttpClient) {  }
 
   getCountries(): Observable<Country[]> {
     return this.httpClient.get<Country[]>(url)
@@ -28,6 +27,6 @@ export class CountryService{
   }
 
   updateCountry(country: Country) {
-    this.selectedCountry.next(country);
+    this.countrySource.next(country);
   }
 }
