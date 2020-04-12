@@ -7,6 +7,10 @@ let ellipsoid: any;
 let pinBuilder = new Cesium.PinBuilder();
 let pinMarkers: any[] = [];
 
+const MINIMUM_ZOOM_DISTANCE = 250;
+const MAXIMUM_ZOOM_DISTANCE = 12000000;
+const MINIMUM_ZOOM_RATE = 300;
+
 @Component({
   selector: 'app-map',
   templateUrl: './map.component.html',
@@ -31,6 +35,14 @@ export class MapComponent implements OnInit {
     Cesium.when(pinMarkers, function(pins){
       viewer.zoomTo(pins);
     });
+
+    this.limitZoomAbility();
+  }
+
+  limitZoomAbility() {
+    viewer.scene.screenSpaceCameraController.minimumZoomDistance = MINIMUM_ZOOM_DISTANCE;
+    viewer.scene.screenSpaceCameraController.maximumZoomDistance = MAXIMUM_ZOOM_DISTANCE;		
+    viewer.scene.screenSpaceCameraController._minimumZoomRate = MINIMUM_ZOOM_RATE;
   }
   
   /**
@@ -74,69 +86,17 @@ export class MapComponent implements OnInit {
    * Zoom out button click handler: Move camera backward.
    */
   zoomOut() {
-    viewer.camera.moveBackward(
-      ellipsoid.cartesianToCartographic(viewer.camera.position).height / 10.0
-    );
+    var backwardDistance = ellipsoid.cartesianToCartographic(viewer.camera.position).height / 10.0;
+    viewer.camera.moveBackward(backwardDistance);
+    if (ellipsoid.cartesianToCartographic(viewer.camera.position).height > MAXIMUM_ZOOM_DISTANCE)
+    ellipsoid.cartesianToCartographic(viewer.camera.position).height = MAXIMUM_ZOOM_DISTANCE * 0.001;
   }
 
   setup() {
     //////////////////////////////////////////////////////////////////////////
-    // Create a clock that loops on Christmas day 2013 and runs in 4000x real time.
-    //////////////////////////////////////////////////////////////////////////
-    var clock = new Cesium.Clock({
-      clockRange: Cesium.ClockRange.LOOP_STOP, // loop when we hit the end time
-      clockStep: Cesium.ClockStep.SYSTEM_CLOCK_MULTIPLIER,
-      multiplier: 1, // how much time to advance each tick
-      shouldAnimate: true // Animation on by default
-    });
-    /**
-     * This class is an example of a custom geocoder.
-     * It provides geocoding through the OpenStreetMap Nominatim service.
-     * @alias OpenStreetMapNominatimGeocoder
-     * @constructor
-     */
-    function OpenStreetMapNominatimGeocoder() {
-    }
-
-    /**
-     * The function called to geocode using this geocoder service.
-     *
-     * @param {String} input The query to be sent to the geocoder service
-     * @returns {Promise<GeocoderService~Result[]>}
-     */
-    OpenStreetMapNominatimGeocoder.prototype.geocode = function (input) {
-        var endpoint = 'https://nominatim.openstreetmap.org/search';
-        var resource = new Cesium.Resource({
-            url: endpoint,
-            queryParameters: {
-                format: 'json',
-                q: input
-            }
-        });
-
-        return resource.fetchJson()
-            .then(function (results) {
-                var bboxDegrees;
-                return results.map(function (resultObject) {
-                    bboxDegrees = resultObject.boundingbox;
-                    return {
-                        displayName: resultObject.display_name,
-                        destination: Cesium.Rectangle.fromDegrees(
-                            bboxDegrees[2],
-                            bboxDegrees[0],
-                            bboxDegrees[3],
-                            bboxDegrees[1]
-                        )
-                    };
-                });
-            });
-    };
-
-    //////////////////////////////////////////////////////////////////////////
     // Creating the Viewer & Imagery
     //////////////////////////////////////////////////////////////////////////
     viewer = new Cesium.Viewer("cesiumContainer", {
-      geocoder: new OpenStreetMapNominatimGeocoder(),
       imageryProvider: Cesium.createWorldImagery({
         style: Cesium.IonWorldImageryStyle.AERIAL_WITH_LABELS,
         assetId: 3954
@@ -149,10 +109,14 @@ export class MapComponent implements OnInit {
       sceneModePicker: false,
       scene3DOnly: true, //Each geometry instance will only be rendered in 3D to save GPU memory.
       projectionPicker: true,  //Add projection button
+      
     });
 
+    // Remove credit logo.
+    viewer.scene.frameState.creditDisplay.destroy();
+
     //////////////////////////////////////////////////////////////////////////
-    // Adding buttons with lon, lat, alt information
+    // Add information about camera longtiture, latitude & alt.
     //////////////////////////////////////////////////////////////////////////
     var cartographic = new Cesium.Cartographic();
     var camera = viewer.scene.camera;
@@ -210,10 +174,6 @@ export class MapComponent implements OnInit {
       ) {
         var cartesian = viewer.scene.pickPosition(movement.endPosition);
         var cartographic = Cesium.Cartographic.fromCartesian(cartesian);
-        var longitudeString = Cesium.Math.toDegrees(cartographic.longitude).toFixed(2);
-        var latitudeString = Cesium.Math.toDegrees(cartographic.latitude).toFixed(2);
-        var heightString = cartographic.height.toFixed(2);
-
         
         labelEntity.position = cartesian;
         labelEntity.label.show = true;
@@ -226,6 +186,5 @@ export class MapComponent implements OnInit {
         previousPickedEntity = pickedEntity;
       }
     }, Cesium.ScreenSpaceEventType.MOUSE_MOVE);
-
   }
 }

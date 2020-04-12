@@ -32,6 +32,7 @@ export class SearchBarComponent implements OnInit {
     );
   }
 
+
   _filter(val: string) {
     return this.countries.filter(country =>
       country.country.toLowerCase().includes(val.toLowerCase()));
