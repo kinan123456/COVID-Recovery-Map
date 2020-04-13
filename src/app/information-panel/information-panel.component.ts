@@ -1,6 +1,5 @@
-import { Component, OnInit, OnDestroy, AfterViewInit } from '@angular/core';
+import { Component, OnInit, OnDestroy, AfterViewInit, Input } from '@angular/core';
 import { CountryService } from '../country/country.service';
-import { Country } from '../country/country.model';
 
 @Component({
   selector: 'app-information-panel',
@@ -8,15 +7,9 @@ import { Country } from '../country/country.model';
   styleUrls: ['./information-panel.component.css']
 })
 export class InformationPanelComponent implements OnInit{
-  chosenCountry: Country;
-  
   constructor(private countrySvc: CountryService) { }
 
   ngOnInit(): void {
-    this.countrySvc.selectedCountry.subscribe(
-      selectedCountry => {
-        this.chosenCountry = selectedCountry
-      });
   }
 
 }
