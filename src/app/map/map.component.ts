@@ -1,11 +1,10 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, NgZone, DoCheck } from '@angular/core';
 import { CountryService } from '../country/country.service';
 import { Country } from '../country/country.model';
 
 let viewer: any;
 let ellipsoid: any;
 let pinBuilder = new Cesium.PinBuilder();
-let pinMarkers: any[] = [];
 
 const MINIMUM_ZOOM_DISTANCE = 250;
 const MAXIMUM_ZOOM_DISTANCE = 12000000;
@@ -42,7 +41,21 @@ export class MapComponent implements OnInit {
     viewer.scene.screenSpaceCameraController.maximumZoomDistance = MAXIMUM_ZOOM_DISTANCE;		
     viewer.scene.screenSpaceCameraController._minimumZoomRate = MINIMUM_ZOOM_RATE;
   }
+
   private flyToCountry() {
+    this.countrySvc.selectedCountry.subscribe(
+      selectedCountry => {
+        var entity = viewer.entities.getElementById(selectedCountry.country);
+        if (Cesium.defined(entity)) {
+          viewer.flyTo(entity, {
+            offset: new Cesium.HeadingPitchRange(0, -Cesium.Math.PI_OVER_FOUR, 3000000)
+          }).then(function(result) {
+              if (result) {
+                  viewer.selectedEntity = entity;
+              }
+          });
+        }
+      });
   }
   
   /**
@@ -87,13 +100,12 @@ export class MapComponent implements OnInit {
    * Zoom out button click handler: Move camera backward.
    */
   zoomOut() {
-    var backwardDistance = ellipsoid.cartesianToCartographic(viewer.camera.position).height / 10.0;
-    viewer.camera.moveBackward(backwardDistance);
-    if (ellipsoid.cartesianToCartographic(viewer.camera.position).height > MAXIMUM_ZOOM_DISTANCE)
-    ellipsoid.cartesianToCartographic(viewer.camera.position).height = MAXIMUM_ZOOM_DISTANCE * 0.001;
+    viewer.camera.moveBackward(
+      ellipsoid.cartesianToCartographic(viewer.camera.position).height / 10.0
+    );
   }
 
-  setup() {
+  private setup() {
     //////////////////////////////////////////////////////////////////////////
     // Creating the Viewer & Imagery
     //////////////////////////////////////////////////////////////////////////
@@ -116,7 +128,7 @@ export class MapComponent implements OnInit {
     viewer.scene.frameState.creditDisplay.destroy();
 
     //////////////////////////////////////////////////////////////////////////
-    // Add information about camera longtiture, latitude & alt.
+    // Add information about camera longtitude, latitude & alt.
     //////////////////////////////////////////////////////////////////////////
     var cartographic = new Cesium.Cartographic();
     var camera = viewer.scene.camera;
@@ -136,11 +148,6 @@ export class MapComponent implements OnInit {
         "Alt: " +
         (cartographic.height * 0.001).toFixed(1) +
         " km";
-
-      viewer.canvas.setAttribute('tabindex', '0'); // needed to put focus on the canvas
-      viewer.canvas.onclick = function() {
-        viewer.canvas.focus();
-      };
     });
 
     //////////////////////////////////////////////////////////////////////////
@@ -179,13 +186,10 @@ export class MapComponent implements OnInit {
         Cesium.defined(pickedEntity.billboard)
       ) {
         var cartesian = viewer.scene.pickPosition(movement.endPosition);
-        var cartographic = Cesium.Cartographic.fromCartesian(cartesian);
         
         labelEntity.position = cartesian;
         labelEntity.label.show = true;
         labelEntity.label.text = pickedEntity.name;
-
-        labelEntity.label.eyeOffset = new Cesium.Cartesian3(0.0, 0.0, -cartographic.height * (viewer.scene.mode === Cesium.SceneMode.SCENE2D ? 1.5 : 1.0));
 
         pickedEntity.billboard.scale = 2.0;
         pickedEntity.billboard.color = Cesium.Color.ORANGERED;
