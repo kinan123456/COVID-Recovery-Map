@@ -1,14 +1,20 @@
 <form class="example-form" [formGroup]='usersForm'>
   <mat-form-field class="example-full-width">
-    <input matInput placeholder="Choose a country" [matAutocomplete]="auto" formControlName='userInput'>
+    <input type="text"
+           matInput
+           placeholder="Choose a country"
+           [matAutocomplete]="auto"
+           required
+           formControlName="userInput"
+           [ngModel]="currentValue">
+
+           <mat-autocomplete #auto="matAutocomplete" (optionSelected)='parseCountry($event.option.value)'>
+                <mat-option *ngFor="let country of (filteredCountries | async)" [value]="country.country">
+                  <img style="vertical-align: middle;" aria-hidden src="{{country.countryInfo.flag}}" height="25"/>
+                  <span> {{ country.country }}</span>
+                </mat-option>
+           </mat-autocomplete>
   </mat-form-field>
 
-  <mat-autocomplete #auto="matAutocomplete">
-      <mat-option *ngFor="let country of (filteredCountries | async)" 
-                  [value]="country.country"
-                  (onSelectionChange)="parseCountry(country)">
-        <span>{{ country.country }}</span>
-        <small> | ID: {{country.countryInfo._id}}</small>
-      </mat-option>
-  </mat-autocomplete>
+  <app-information-panel [recoveredCases]="recoveredCases" *ngIf="loadDetails"></app-information-panel>
 </form>

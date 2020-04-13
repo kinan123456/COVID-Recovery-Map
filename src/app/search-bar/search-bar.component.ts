@@ -14,6 +14,9 @@ export class SearchBarComponent implements OnInit {
   filteredCountries: Observable<Country[]>;
   countries: Country[] = [];
   usersForm: FormGroup;
+  recoveredCases: number;
+  loadDetails = false;
+  currentValue: string;
 
   constructor(private fb: FormBuilder, private countrySvc: CountryService) {}
   
@@ -21,7 +24,6 @@ export class SearchBarComponent implements OnInit {
     this.usersForm = this.fb.group({
       userInput: null
     });
-
     this.countrySvc.getCountries().subscribe(resp => {
       this.countries = resp
       this.countries.sort((obj1, obj2) => obj1.country.localeCompare(obj2.country));
@@ -33,12 +35,15 @@ export class SearchBarComponent implements OnInit {
   }
 
 
-  _filter(val: string) {
+  private _filter(val: string) {
     return this.countries.filter(country =>
       country.country.toLowerCase().includes(val.toLowerCase()));
   }
 
-  parseCountry(country: Country) {
-    this.countrySvc.updateCountry(country);
+  parseCountry(countryName: string) {
+    this.loadDetails = true;
+    var result = this.countries.filter(function(o) { return o.country == countryName; });
+    this.recoveredCases = result? result[0].recovered : null;
+    this.countrySvc.updateCountry(result[0]);
   }
 }
