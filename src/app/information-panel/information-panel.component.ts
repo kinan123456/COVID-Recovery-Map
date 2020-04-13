@@ -7,6 +7,8 @@ import { CountryService } from '../country/country.service';
   styleUrls: ['./information-panel.component.css']
 })
 export class InformationPanelComponent implements OnInit{
+  @Input('recoveredCases') recoveredCases: number;
+
   constructor(private countrySvc: CountryService) { }
 
   ngOnInit(): void {
