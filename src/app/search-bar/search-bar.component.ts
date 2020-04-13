@@ -32,8 +32,9 @@ export class SearchBarComponent implements OnInit {
     this.filteredCountries = this.usersForm.get('userInput').valueChanges
       .pipe(map(val => this._filter(val))
     );
-  }
 
+    this.handleMapCountrySearch();
+  }
 
   private _filter(val: string) {
     return this.countries.filter(country =>
@@ -46,4 +47,13 @@ export class SearchBarComponent implements OnInit {
     this.recoveredCases = result? result[0].recovered : null;
     this.countrySvc.updateCountry(result[0]);
   }
+
+  private handleMapCountrySearch() {
+    this.countrySvc.selectedCountry.subscribe(
+      selectedCountry => {
+        this.loadDetails = true;
+        this.currentValue = selectedCountry.country;
+        this.recoveredCases = selectedCountry.recovered;                          
+      });
+  }  
 }

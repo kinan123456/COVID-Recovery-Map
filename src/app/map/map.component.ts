@@ -196,8 +196,9 @@ export class MapComponent implements OnInit {
     //////////////////////////////////////////////////////////////////////////
     // Custom mouse double left click interaction for selecting entities
     //////////////////////////////////////////////////////////////////////////
-    viewer.screenSpaceEventHandler.setInputAction(function(e) {
+    viewer.screenSpaceEventHandler.setInputAction((e) => {
       var picked = viewer.scene.pick(e.position);
+      var _self = this;
       if (Cesium.defined(picked)) {
           var id = Cesium.defaultValue(picked.id, picked.primitive.id);
           if (id instanceof Cesium.Entity) {
@@ -208,6 +209,7 @@ export class MapComponent implements OnInit {
                 }).then(function(result) {
                     if (result) {
                         viewer.selectedEntity = entity;
+                        _self.countrySvc.updateCountry(entity.info as Country);
                     }
                 });
               }
