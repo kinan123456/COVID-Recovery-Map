@@ -1,5 +1,5 @@
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
-import { Injectable, OnDestroy } from '@angular/core';
+import { Injectable } from '@angular/core';
 import { Observable, throwError as observableThrowError, Subject, BehaviorSubject } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 import { Country } from './country.model';
@@ -21,12 +21,12 @@ export class CountryService{
         .pipe(catchError(this.handleError));
   }
   
-  handleError(res: HttpErrorResponse | any) {
-    console.error(res.error || res.body.error);
-    return observableThrowError(res.error || 'Server Error');
-  }
-
   updateCountry(country: Country) {
     this.countrySource.next(country);
+  }  
+  
+  private handleError(res: HttpErrorResponse | any) {
+    console.error(res.error || res.body.error);
+    return observableThrowError(res.error || 'Server Error');
   }
 }
