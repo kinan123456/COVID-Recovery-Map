@@ -18,41 +18,42 @@ const MINIMUM_ZOOM_RATE = 300;
 })
 export class MapComponent implements OnInit {
   countries: Country[] = [];  
-  constructor(private countrySvc: CountryService) { }
+
+  constructor(private countrySvc: CountryService, private ngZone: NgZone) { }
 
   ngOnInit() {
-    this.setup();
+    this.ngZone.runOutsideAngular(() => {
+      this.setup();
 
-    this.countrySvc.getCountries().subscribe(resp => {
-      var i;
-      this.countries = resp
-      for (i = 0; i < this.countries.length; i++) {
-        this.addPins(this.countries[i]);
-      }
+      this.countrySvc.getCountries().subscribe(resp => {
+        this.countries = resp
+        for (var i = 0; i < this.countries.length; i++) {
+          this.addPins(this.countries[i]);
+        }
+      });
+  
+      this.limitZoomAbility();
+      this.flyToCountry();
     });
-/*
-    //Since some of the pins are created asynchronously, wait for them all to load before zooming/
-    Cesium.when(pinMarkers, function(pins){
-      viewer.zoomTo(pins)
-    });*/
-
-    this.limitZoomAbility();
   }
 
-  limitZoomAbility() {
+  private limitZoomAbility() {
     viewer.scene.screenSpaceCameraController.minimumZoomDistance = MINIMUM_ZOOM_DISTANCE;
     viewer.scene.screenSpaceCameraController.maximumZoomDistance = MAXIMUM_ZOOM_DISTANCE;		
     viewer.scene.screenSpaceCameraController._minimumZoomRate = MINIMUM_ZOOM_RATE;
+  }
+  private flyToCountry() {
   }
   
   /**
   * Add pins as markers to all countries at map.
   * @param country Country object
   */
-  addPins(country) {
+ private addPins(country) {
     //Create a red pin representing a hospital from the maki icon set.
-    var pinMarker = Cesium.when(pinBuilder.fromMakiIconId('marker', Cesium.Color.GREEN, 48), function(canvas) {
+    Cesium.when(pinBuilder.fromMakiIconId('marker', Cesium.Color.GREEN, 48), function(canvas) {
       return viewer.entities.add({
+        id: country.country,
         name : country.country,
         position : Cesium.Cartesian3.fromDegrees(country.countryInfo.long, country.countryInfo.lat),
         billboard : {
@@ -71,7 +72,6 @@ export class MapComponent implements OnInit {
             </p>'
       });
     });
-    pinMarkers.push(pinMarker);
   }
 
   /**
