@@ -45,16 +45,14 @@ export class MapComponent implements OnInit {
   private flyToCountry() {
     this.countrySvc.selectedCountry.subscribe(
       selectedCountry => {
-        var entity = viewer.entities.getElementById(selectedCountry.country);
-        if (Cesium.defined(entity)) {
-          viewer.flyTo(entity, {
-            offset: new Cesium.HeadingPitchRange(0, -Cesium.Math.PI_OVER_FOUR, 3000000)
-          }).then(function(result) {
-              if (result) {
-                  viewer.selectedEntity = entity;
-              }
-          });
-        }
+        var entity = viewer.entities.getById(selectedCountry.country);
+        viewer.flyTo(entity, {
+          offset: new Cesium.HeadingPitchRange(0, -Cesium.Math.PI_OVER_FOUR, 3000000)
+        }).then(function(result) {
+            if (result) {
+              viewer.selectedEntity = entity;
+            }
+        });
       });
   }
   
@@ -67,7 +65,6 @@ export class MapComponent implements OnInit {
     Cesium.when(pinBuilder.fromMakiIconId('marker', Cesium.Color.GREEN, 48), function(canvas) {
       return viewer.entities.add({
         id: country.country,
-        name : country.country,
         position : Cesium.Cartesian3.fromDegrees(country.countryInfo.long, country.countryInfo.lat),
         billboard : {
           image : canvas.toDataURL(),
@@ -75,14 +72,13 @@ export class MapComponent implements OnInit {
         },
         info: country,
         description: 
-                    '\
-            <p>\
-              Country Name: ' + country.country + '<br/>\
-              Total Cases:' + country.cases + '<br/>\
-              Total Deaths:' + country.deaths + '<br/>\
-              Total Recovered:' + country.recovered + '<br/>\
-              Total Active:' + country.active + '<br/>\
-            </p>'
+          '<table class="cesium-infoBox-defaultTable"><tbody>' +
+          '<tr><th>Country Name</th><td>' + country.country + '</td></tr>' +
+          '<tr><th>Total Cases</th><td>' + country.cases + '</td></tr>' +
+          '<tr><th>Total Deaths</th><td>' + country.deaths + '</td></tr>' +
+          '<tr><th>Total Recovered</th><td>' +  country.recovered  + '</td></tr>' +
+          '<tr><th>Total Active</th><td>' +  country.active + '</td></tr>' +
+          '</tbody></table>'
       });
     });
   }
@@ -122,7 +118,15 @@ export class MapComponent implements OnInit {
       sceneModePicker: false,
       scene3DOnly: true, //Each geometry instance will only be rendered in 3D to save GPU memory.
       projectionPicker: true,  //Add projection button
+      geocoder: false //Disable cesium search
     });
+
+    viewer.scene.canvas.setAttribute('tabIndex', 1);
+
+    viewer.screenSpaceEventHandler.setInputAction(function(e) {
+        viewer.scene.canvas.focus();
+    }, Cesium.ScreenSpaceEventType.LEFT_DOWN);
+    
 
     // Remove credit logo.
     viewer.scene.frameState.creditDisplay.destroy();
@@ -189,7 +193,7 @@ export class MapComponent implements OnInit {
         
         labelEntity.position = cartesian;
         labelEntity.label.show = true;
-        labelEntity.label.text = pickedEntity.name;
+        labelEntity.label.text = pickedEntity.id;
 
         pickedEntity.billboard.scale = 2.0;
         pickedEntity.billboard.color = Cesium.Color.ORANGERED;
@@ -202,7 +206,6 @@ export class MapComponent implements OnInit {
     //////////////////////////////////////////////////////////////////////////
     viewer.screenSpaceEventHandler.setInputAction((e) => {
       var picked = viewer.scene.pick(e.position);
-      var _self = this;
       if (Cesium.defined(picked)) {
           var id = Cesium.defaultValue(picked.id, picked.primitive.id);
           if (id instanceof Cesium.Entity) {
@@ -210,15 +213,12 @@ export class MapComponent implements OnInit {
               if (Cesium.defined(entity)) {
                 viewer.flyTo(entity, {
                   offset: new Cesium.HeadingPitchRange(0, -Cesium.Math.PI_OVER_FOUR, 3000000)
-                }).then(function(result) {
-                    if (result) {
-                        viewer.selectedEntity = entity;
-                        _self.countrySvc.updateCountry(entity.info as Country);
-                    }
                 });
+                viewer.selectedEntity = entity;
+                this.countrySvc.updateCountry(entity.info as Country);
               }
           }
       }
-    }, Cesium.ScreenSpaceEventType.LEFT_DOUBLE_CLICK);        
+    }, Cesium.ScreenSpaceEventType.LEFT_DOWN);
   }
 }
