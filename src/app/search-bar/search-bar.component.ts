@@ -21,6 +21,8 @@ export class SearchBarComponent implements OnInit {
   constructor(private fb: FormBuilder, private countrySvc: CountryService) {}
   
   ngOnInit() {
+    this.handleMapCountrySearch();
+    
     this.usersForm = this.fb.group({
       userInput: null
     });
@@ -32,8 +34,6 @@ export class SearchBarComponent implements OnInit {
     this.filteredCountries = this.usersForm.get('userInput').valueChanges
       .pipe(map(val => this._filter(val))
     );
-
-    this.handleMapCountrySearch();
   }
 
   private _filter(val: string) {
@@ -49,11 +49,10 @@ export class SearchBarComponent implements OnInit {
   }
 
   private handleMapCountrySearch() {
-    this.countrySvc.selectedCountry.subscribe(
-      selectedCountry => {
+    this.countrySvc.selectedCountry.subscribe(selectedCountry => {
         this.loadDetails = true;
         this.currentValue = selectedCountry.country;
-        this.recoveredCases = selectedCountry.recovered;                          
-      });
-  }  
+        this.recoveredCases = selectedCountry.recovered;    
+    });
+  }
 }

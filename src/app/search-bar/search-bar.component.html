@@ -8,12 +8,13 @@
            formControlName="userInput"
            [ngModel]="currentValue">
 
-           <mat-autocomplete #auto="matAutocomplete" (optionSelected)='parseCountry($event.option.value)'>
-                <mat-option *ngFor="let country of (filteredCountries | async)" [value]="country.country">
-                  <img style="vertical-align: middle;" aria-hidden src="{{country.countryInfo.flag}}" height="25"/>
-                  <span> {{ country.country }}</span>
-                </mat-option>
-           </mat-autocomplete>
+    <mat-autocomplete #auto="matAutocomplete" (optionSelected)='parseCountry($event.option.value)'>
+            <mat-option *ngFor="let country of (filteredCountries | async)" [value]="country.country">
+                <img style="vertical-align: middle;" aria-hidden src="{{country.countryInfo.flag}}" height="25"/>
+                <span> {{ country.country }}</span>
+            </mat-option>
+    </mat-autocomplete>
+
   </mat-form-field>
 
   <app-information-panel [recoveredCases]="recoveredCases" *ngIf="loadDetails"></app-information-panel>
