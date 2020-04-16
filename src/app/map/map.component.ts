@@ -1,4 +1,4 @@
-import { Component, OnInit, NgZone, DoCheck } from '@angular/core';
+import { Component, OnInit, NgZone, DoCheck, ChangeDetectorRef } from '@angular/core';
 import { CountryService } from '../country/country.service';
 import { Country } from '../country/country.model';
 
@@ -121,13 +121,6 @@ export class MapComponent implements OnInit {
       geocoder: false //Disable cesium search
     });
 
-    viewer.scene.canvas.setAttribute('tabIndex', 1);
-
-    viewer.screenSpaceEventHandler.setInputAction(function(e) {
-        viewer.scene.canvas.focus();
-    }, Cesium.ScreenSpaceEventType.LEFT_DOWN);
-    
-
     // Remove credit logo.
     viewer.scene.frameState.creditDisplay.destroy();
 
@@ -204,7 +197,10 @@ export class MapComponent implements OnInit {
     //////////////////////////////////////////////////////////////////////////
     // Custom mouse double left click interaction for selecting entities
     //////////////////////////////////////////////////////////////////////////
+    viewer.scene.canvas.setAttribute('tabIndex', 1);
+
     viewer.screenSpaceEventHandler.setInputAction((e) => {
+      viewer.scene.canvas.focus();
       var picked = viewer.scene.pick(e.position);
       if (Cesium.defined(picked)) {
           var id = Cesium.defaultValue(picked.id, picked.primitive.id);
@@ -215,7 +211,7 @@ export class MapComponent implements OnInit {
                   offset: new Cesium.HeadingPitchRange(0, -Cesium.Math.PI_OVER_FOUR, 3000000)
                 });
                 viewer.selectedEntity = entity;
-                this.countrySvc.updateCountry(entity.info as Country);
+                this.ngZone.run(() => this.countrySvc.updateCountry(entity.info as Country));
               }
           }
       }
