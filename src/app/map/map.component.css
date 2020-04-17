@@ -1,16 +1,21 @@
-#toolbar {
+.toolbar {
     padding: 2px 5px;
     position: absolute;
-    top: 5px;
-    left: 5px;
     background: rgba(42,42,42,0.9); 
     border-radius: 5px;
 }
-#toolbar input {
-    vertical-align: middle;
-    padding-top: 2px;
-    padding-bottom: 2px;
+
+.topleft {
+    top: 5px;
+    left: 5px;
+    color: white;
 }
+
+.bottomleft {
+    bottom: 5px;
+    left: 5px;
+}
+
 #cesiumContainer {
     width: 100%; height: 100%; margin: 0; padding: 0; overflow: hidden;
     font-family: sans-serif; color: #edffff;
