@@ -4,6 +4,7 @@ import { HttpClientModule } from '@angular/common/http';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatInputModule } from '@angular/material/input';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatIconModule } from '@angular/material/icon';
 
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { AppRoutingModule } from './app-routing.module';
@@ -35,7 +36,8 @@ import { AngularCesiumWidgetsModule } from 'angular-cesium';
     ReactiveFormsModule,
     MatProgressSpinnerModule,
     AngularCesiumModule.forRoot(),
-    AngularCesiumWidgetsModule
+    AngularCesiumWidgetsModule,
+    MatIconModule
   ],
   providers: [],
   bootstrap: [AppComponent]

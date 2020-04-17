@@ -1,5 +1,6 @@
 <form class="example-form" [formGroup]='usersForm'>
   <mat-form-field class="example-full-width">
+    <mat-icon matPrefix class="mat-icon">search</mat-icon>
     <input type="text"
            matInput
            placeholder="Choose a country"
@@ -16,6 +17,7 @@
     </mat-autocomplete>
 
   </mat-form-field>
+  
 
   <app-information-panel [recoveredCases]="recoveredCases" *ngIf="loadDetails"></app-information-panel>
 </form>
