@@ -23,6 +23,7 @@
     "@angular/platform-browser-dynamic": "~9.1.0",
     "@angular/router": "~9.1.0",
     "@types/mapbox-gl": "^1.8.3",
+    "@znemz/cesium-navigation": "^4.0.0",
     "angular-cesium": "0.0.65",
     "cesium": "^1.68.0",
     "mapbox-gl": "^1.9.1",
@@ -31,6 +32,7 @@
     "ngx-csv-parser": "0.0.2",
     "rxjs": "~6.5.4",
     "tslib": "^1.10.0",
+    "yarn": "^1.22.4",
     "zone.js": "~0.10.2"
   },
   "devDependencies": {
