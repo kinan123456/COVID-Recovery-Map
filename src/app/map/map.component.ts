@@ -16,7 +16,8 @@ const MINIMUM_ZOOM_RATE = 300;
   styleUrls: ['./map.component.css']
 })
 export class MapComponent implements OnInit {
-  countries: Country[] = [];  
+  countries: Country[] = [];
+  isLoaded = false;
 
   constructor(private countrySvc: CountryService, private ngZone: NgZone) { }
 
@@ -121,6 +122,18 @@ export class MapComponent implements OnInit {
       geocoder: false //Disable cesium search
     });
 
+    var helper = new Cesium.EventHelper();
+    helper.add(viewer.scene.globe.tileLoadProgressEvent, function (event) {
+      if (event == 0) {
+      //loading screen display=none
+      setVisible('#loading', false);
+      }
+    });
+
+    function setVisible(selector, visible) {
+      document.querySelector(selector).style.display = visible ? 'block' : 'none';
+    }
+
     // Remove credit logo.
     viewer.scene.frameState.creditDisplay.destroy();
 
@@ -134,17 +147,14 @@ export class MapComponent implements OnInit {
     var hud = document.getElementById("hud");
 
     viewer.clock.onTick.addEventListener(function(clock) {
-      ellipsoid.cartesianToCartographic(camera.positionWC, cartographic);
-      hud.innerHTML =
-        "Lon: " +
-        Cesium.Math.toDegrees(cartographic.longitude).toFixed(2) +
-        "&#176<br/>" +
-        "Lat: " +
-        Cesium.Math.toDegrees(cartographic.latitude).toFixed(2) +
-        "&#176<br/>" +
-        "Alt: " +
-        (cartographic.height * 0.001).toFixed(1) +
-        " km";
+        ellipsoid.cartesianToCartographic(camera.positionWC, cartographic);
+        hud.innerHTML =
+          "Lon: " +
+          Cesium.Math.toDegrees(cartographic.longitude).toFixed(5) +
+          "&#176 &nbsp" +
+          "Lat: " +
+          Cesium.Math.toDegrees(cartographic.latitude).toFixed(5) +
+          "&#176 &nbsp"
     });
 
     //////////////////////////////////////////////////////////////////////////
