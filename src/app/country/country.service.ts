@@ -4,7 +4,7 @@ import { Observable, throwError as observableThrowError, Subject, BehaviorSubjec
 import { catchError } from 'rxjs/operators';
 import { Country } from './country.model';
 
-const url = 'https://corona.lmao.ninja/countries';
+const url = 'https://corona.lmao.ninja/v2/countries';
 
 @Injectable({
     providedIn: 'root'
