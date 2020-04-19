@@ -125,7 +125,6 @@ export class MapComponent implements OnInit {
     var helper = new Cesium.EventHelper();
     helper.add(viewer.scene.globe.tileLoadProgressEvent, function (event) {
       if (event == 0) {
-      //loading screen display=none
       setVisible('#loading', false);
       }
     });
@@ -136,26 +135,7 @@ export class MapComponent implements OnInit {
 
     // Remove credit logo.
     viewer.scene.frameState.creditDisplay.destroy();
-
-    //////////////////////////////////////////////////////////////////////////
-    // Add information about camera longtitude, latitude & alt.
-    //////////////////////////////////////////////////////////////////////////
-    var cartographic = new Cesium.Cartographic();
-    var camera = viewer.scene.camera;
     ellipsoid = viewer.scene.mapProjection.ellipsoid;
-
-    var hud = document.getElementById("hud");
-
-    viewer.clock.onTick.addEventListener(function(clock) {
-        ellipsoid.cartesianToCartographic(camera.positionWC, cartographic);
-        hud.innerHTML =
-          "Lon: " +
-          Cesium.Math.toDegrees(cartographic.longitude).toFixed(5) +
-          "&#176 &nbsp" +
-          "Lat: " +
-          Cesium.Math.toDegrees(cartographic.latitude).toFixed(5) +
-          "&#176 &nbsp"
-    });
 
     //////////////////////////////////////////////////////////////////////////
     // Custom mouse move interaction for highlighting and selecting entities
@@ -175,8 +155,12 @@ export class MapComponent implements OnInit {
     // If the mouse is over a point of interest, change the entity billboard scale and color
     var previousPickedEntity;
 
+    var hud = document.getElementById("hud");
     var handler = viewer.screenSpaceEventHandler;
     handler.setInputAction(function(movement) {
+
+      displayLongtitudeLatitude(movement);
+
       var pickedPrimitive = viewer.scene.pick(movement.endPosition);
       var pickedEntity = Cesium.defined(pickedPrimitive)
         ? pickedPrimitive.id
@@ -204,6 +188,24 @@ export class MapComponent implements OnInit {
       }
     }, Cesium.ScreenSpaceEventType.MOUSE_MOVE);
 
+
+    //////////////////////////////////////////////////////////////////////////
+    // Mouse over the globe to see the cartographic position
+    //////////////////////////////////////////////////////////////////////////
+    function displayLongtitudeLatitude(movement) {
+      var cartesian = viewer.camera.pickEllipsoid(movement.endPosition, viewer.scene.globe.ellipsoid);
+      if (cartesian) {
+          var cartographic = Cesium.Cartographic.fromCartesian(cartesian);
+          var longitudeString = Cesium.Math.toDegrees(cartographic.longitude).toFixed(2);
+          var latitudeString = Cesium.Math.toDegrees(cartographic.latitude).toFixed(2);
+
+          hud.innerHTML =
+            'Lon: ' + ('   ' + longitudeString).slice(-7) + '\u00B0' +
+            '\nLat: ' + ('   ' + latitudeString).slice(-7) + '\u00B0';
+      } else {
+        hud.innerHTML = '';
+      } 
+    }
     //////////////////////////////////////////////////////////////////////////
     // Custom mouse double left click interaction for selecting entities
     //////////////////////////////////////////////////////////////////////////
