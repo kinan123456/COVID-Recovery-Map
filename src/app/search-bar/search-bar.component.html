@@ -1,4 +1,4 @@
-<form class="example-form" [formGroup]='usersForm'>
+<form class="example-form" [formGroup]='countriesForm'>
   <mat-form-field class="example-full-width">
     <mat-icon matPrefix class="mat-icon">search</mat-icon>
     <input type="text"
@@ -18,6 +18,5 @@
 
   </mat-form-field>
   
-
   <app-information-panel [recoveredCases]="recoveredCases" *ngIf="loadDetails"></app-information-panel>
 </form>
