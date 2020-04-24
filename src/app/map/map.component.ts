@@ -9,6 +9,7 @@ let pinBuilder = new Cesium.PinBuilder();
 const MINIMUM_ZOOM_DISTANCE = 250;
 const MAXIMUM_ZOOM_DISTANCE = 12000000;
 const MINIMUM_ZOOM_RATE = 300;
+const DEFAULT_ZOOM_AMOUNT = 2000000;
 
 @Component({
   selector: 'app-map',
@@ -20,7 +21,6 @@ export class MapComponent implements OnInit {
   isLoaded = false;
 
   constructor(private countrySvc: CountryService, private ngZone: NgZone) { }
-
   ngOnInit() {
     this.ngZone.runOutsideAngular(() => {
       this.setup();
@@ -62,7 +62,7 @@ export class MapComponent implements OnInit {
   * @param country Country object
   */
  private addPins(country) {
-    //Create a red pin representing a hospital from the maki icon set.
+    // Create a green marker representing a country.
     Cesium.when(pinBuilder.fromMakiIconId('marker', Cesium.Color.GREEN, 48), function(canvas) {
       return viewer.entities.add({
         id: country.country,
@@ -88,18 +88,22 @@ export class MapComponent implements OnInit {
    * Zoom in button click handler: Move camera forward.
    */
   zoomIn() {
-    viewer.camera.moveForward(
-      ellipsoid.cartesianToCartographic(viewer.camera.position).height / 10.0
-    );
+    if (this.getCurrentZoom() - DEFAULT_ZOOM_AMOUNT > MINIMUM_ZOOM_DISTANCE) {
+      viewer.camera.zoomIn(DEFAULT_ZOOM_AMOUNT);
+    }
   }
 
   /***
    * Zoom out button click handler: Move camera backward.
    */
   zoomOut() {
-    viewer.camera.moveBackward(
-      ellipsoid.cartesianToCartographic(viewer.camera.position).height / 10.0
-    );
+    if (this.getCurrentZoom() + DEFAULT_ZOOM_AMOUNT < MAXIMUM_ZOOM_DISTANCE) {
+      viewer.camera.zoomOut(DEFAULT_ZOOM_AMOUNT);
+    }
+  }
+
+  private getCurrentZoom(): number {
+    return ellipsoid.cartesianToCartographic(viewer.camera.position).height;
   }
 
   private setup() {
