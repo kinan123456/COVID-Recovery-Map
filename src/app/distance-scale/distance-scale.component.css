@@ -1,0 +1,21 @@
+.scale-container {
+    direction: ltr;
+    bottom: 50px;
+    left: 20px;
+    position: absolute;
+    width: 240px;
+    height: 40px;
+    pointer-events: none;
+    user-select: none;
+}
+
+.scale {
+    position: relative;
+    font-size: 14px;
+    text-indent: 10px;
+    color: rgb(28, 117, 165);
+}
+
+.metric {
+    top: 20px;
+}

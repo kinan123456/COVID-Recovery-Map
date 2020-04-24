@@ -16,6 +16,7 @@ import { MapComponent } from './map/map.component';
 import { SearchBarComponent } from './search-bar/search-bar.component';
 import { AngularCesiumModule } from 'angular-cesium';
 import { AngularCesiumWidgetsModule } from 'angular-cesium';
+import { DistanceScaleComponent } from './distance-scale/distance-scale.component';
 
 
 @NgModule({
@@ -23,7 +24,8 @@ import { AngularCesiumWidgetsModule } from 'angular-cesium';
     AppComponent,
     InformationPanelComponent,
     MapComponent,
-    SearchBarComponent
+    SearchBarComponent,
+    DistanceScaleComponent,
   ],
   imports: [
     BrowserModule,
