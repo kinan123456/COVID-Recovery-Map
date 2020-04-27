@@ -1,21 +1,37 @@
-.scale-container {
-    direction: ltr;
-    bottom: 50px;
-    left: 20px;
-    position: absolute;
-    width: 240px;
-    height: 40px;
-    pointer-events: none;
-    user-select: none;
+.distance-legend {
+    right: 25px;
+    bottom: 30px;
+    height: 30px;
+    width: 125px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-sizing: content-box;
 }
 
-.scale {
-    position: relative;
+.distance-legend-label {
     font-size: 14px;
-    text-indent: 10px;
-    color: rgb(28, 117, 165);
+    font-weight: lighter;
+    line-height: 30px;
+    color: white;
+    text-align: center;
 }
 
-.metric {
-    top: 20px;
+.distance-legend-scale-bar {
+    border-left: 1px solid;
+    border-right: 1px solid;
+    border-bottom: 1px solid;
+    position: absolute;
+    height: 10px;
+    top: 15px;
+}
+
+@media print {
+    .distance-legend {
+        display:none;
+    }
+}
+
+@media screen and (max-width:700px), screen and (max-height: 420px) {
+    .distance-legend {
+        display:none;
+    }
 }
